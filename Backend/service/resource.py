@@ -12,7 +12,7 @@ def addResource(email, res):
         return jsonify({'message': 'You are Not allowed'}), 403
     else:
         cc = count.find_one({'name': 'cc'})['cc']
-        resource['rid'] = cc;
+        resource['rid'] = cc
         count.update_one({'name': 'cc'}, {'$set': {'cc': cc + 1}})
         resource.insert_one(res)
 
@@ -36,7 +36,7 @@ def updateResource(email, resid, res):
 
     existingResource = resource.find({'rid': resid})
     if existingResource is None:
-        return jsonify({'message': "Rosource not Found"}), 401
+        return jsonify({'message': "Resource not Found"}), 401
 
     resource.update_one({'rid': resid}, {'$set': res})
 
@@ -53,6 +53,17 @@ def showResources(email):
         r['_id'] = str(r['_id'])
 
     return jsonify(arr), 200
+
+
+def showSingleResource(email, rid):
+    activeUserDetails = activeUser.find_one({'email': email})
+    if activeUserDetails is None:
+        return jsonify({'message': 'Please Log In First'}), 403
+
+    res = resource.find_one({'rid': rid})
+    res['_id'] = str(res['_id'])
+
+    return jsonify(res)
 
 
 def assignResourceToTask(email, task, resId):
@@ -75,14 +86,3 @@ def assignResourceToTask(email, task, resId):
     tasks.update_one({'name': task['name'], 'projectId': existingProject['projectId']}, {'$set': task})
 
     return jsonify({'message': "Resource is assign Successfully"})
-
-
-def showSingleResource(email, rid):
-    activeUserDetails = activeUser.find_one({'email': email})
-    if activeUserDetails is None:
-        return jsonify({'message': 'Please Log In First'}), 403
-
-    res = resource.find_one({'rid': rid})
-    res['_id'] = str(res['_id'])
-
-    return jsonify(res)

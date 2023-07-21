@@ -15,13 +15,13 @@ def signUp(response):
     if existing_user is not None:
         return jsonify({"message": "User with this email already exists"}), 400
 
-    if response.get('user')["role"] == 'ADMIN' and response.get('secretKey') == 'Jenny':
+    if response.get('user')["role"] == 'ADMIN' and response.get('secretKey') == 'PortfolioPilot':
         obj = response.get('user')
         user.insert_one(
             createUser(obj['firstName'], obj['lastName'], obj['role'], obj['about'], obj['email'], obj['password']))
         userCount = userCount + 1
 
-    elif response.get('user')["role"] == 'ADMIN' and response.get('secretKey') != 'Jenny':
+    elif response.get('user')["role"] == 'ADMIN' and response.get('secretKey') != 'PortfolioPilot':
         return jsonify({"message": "This secret key is not valid"}), 400
 
     else:
@@ -104,4 +104,7 @@ def readManager(email):
         return jsonify({'message': "You have to Log In First"}), 403
 
     managers = list(user.find({'role': 'Manager'}))
+    for manager in managers:
+        manager['_id'] = str(manager['_id'])
+
     return jsonify(managers), 201

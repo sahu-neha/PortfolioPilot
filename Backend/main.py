@@ -12,29 +12,29 @@ app = Flask(__name__)
 
 # ================== Auth routes ================== #
 
-@app.route('/user/signup')
+@app.route('/user/signup', methods=["POST"])
 def signup(): return signUp(request.get_json())
 
 
-@app.route('/user/login')
+@app.route('/user/login', methods=["GET"])
 def login(): return logIn(request.get_json())
 
 
-@app.route('/user/logout/<email>')
+@app.route('/user/logout/<email>', methods=["DELETE"])
 def logout(email): return logOut(email)
 
 
-@app.route('/user/delete/<email>')
+@app.route('/user/delete/<email>', methods=["DELETE"])
 def deleteUserRoute(email): return deleteUser(email)
 
 
-@app.route('/user/update/<email>')
+@app.route('/user/update/<email>', methods=["PATCH"])
 def updateUserRoute(email): return updateUser(email, request.get_json())
 
 
 # ================== Project routes ================== #
 
-@app.route('/user/managers/<email>')
+@app.route('/user/managers/<email>', methods=["GET"])
 def showManagers(email): return readManager(email)
 
 
@@ -90,25 +90,25 @@ def assignResources(email, task, resId): return assignResourceToTask(email, task
 
 # ================== Task routes ================== #
 
-# @app.route('/task/<email>', methods=['POST'])
-# def create_task(email): return createTask(email, request.get_json())
-#
-#
-# @app.route('/task/<email>/<resid>', methods=['DELETE'])
-# def removeTask(email, resid): return deleteTask(email, resid)
-#
-#
-# @app.route('/task/<email>/<resid>', methods=['PATCH'])
-# def update_task(email, resid): return updateTask(email, resid, request.get_json())
-#
-#
-# @app.route('/task/<email>', methods=['GET'])
-# def getAllTask(email): return showTasks(email, projectId, taskId)
-#
-#
-# @app.route('/task/<email>/<resid>')
-# def getSingleTask(email, resid): return showSingleTask(email, resid)
+@app.route('/task/<email>/<projectid>/<task>', methods=['POST'])
+def create_task(email, projectid, task): return createTask(email, projectid, task)
+
+
+@app.route('/task/<email>/<projectid>/<task>', methods=['DELETE'])
+def delete_task(email, projectid, task): return deleteTask(email, projectid, task)
+
+
+@app.route('/task/<email>/<projectid>/<task>', methods=['PATCH'])
+def delete_task(email, projectid, task): return updateTask(email, projectid, task)
+
+
+@app.route('/task/<email>/<projectid>', methods=['GET'])
+def show_all_tasks(email, projectid): return showTasks(email, projectid)
+
+
+@app.route('/task/<email>/<projectid>/<taskid>')
+def show_one_task(email, projectid, taskid): return showSingleTask(email, projectid, taskid)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
