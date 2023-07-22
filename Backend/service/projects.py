@@ -1,5 +1,3 @@
-from datetime import date
-
 from flask import jsonify
 
 from models.database import user, activeUser, projects
@@ -10,7 +8,9 @@ def createProject(email, project):
     if existing_project is not None:
         return jsonify({"message": "Project with same Id already Present"}), 301
 
-    project["startDate"] = str(date.today())
+    # project["startDate"] = str(date.today())
+
+    project["status"] = "Pending"
 
     activeUserDetails = activeUser.find_one({'email': email, 'role': 'ADMIN'})
     if activeUserDetails is None:
@@ -71,7 +71,7 @@ def deleteProject(email, projectid):
 
 def displayProjects(email):
     activeUserDetails = activeUser.find_one({'email': email})
-    if activeUserDetails.get("role") == 'ADMIN':
+    if activeUserDetails["role"] == 'ADMIN':
         return jsonify(list(projects.find())), 200
     else:
         arr = list(projects.find({'manager': email}))

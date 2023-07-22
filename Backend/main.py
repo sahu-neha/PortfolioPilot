@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 
 from service.authLog import signUp, logIn, logOut, deleteUser, updateUser, readManager
 from service.projects import createProject, assignProjectToManager, updateProject, deleteProject, displayProjects, \
@@ -9,6 +10,8 @@ from service.tasks import createTask, deleteTask, updateTask, showTasks, showSin
 
 app = Flask(__name__)
 
+CORS(app)
+
 
 # ================== Auth routes ================== #
 
@@ -16,7 +19,7 @@ app = Flask(__name__)
 def signup(): return signUp(request.get_json())
 
 
-@app.route('/user/login', methods=["GET"])
+@app.route('/user/login', methods=["POST"])
 def login(): return logIn(request.get_json())
 
 
@@ -99,14 +102,14 @@ def delete_task(email, projectid, task): return deleteTask(email, projectid, tas
 
 
 @app.route('/task/<email>/<projectid>/<task>', methods=['PATCH'])
-def delete_task(email, projectid, task): return updateTask(email, projectid, task)
+def update_task(email, projectid, task): return updateTask(email, projectid, task)
 
 
 @app.route('/task/<email>/<projectid>', methods=['GET'])
 def show_all_tasks(email, projectid): return showTasks(email, projectid)
 
 
-@app.route('/task/<email>/<projectid>/<taskid>')
+@app.route('/task/<email>/<projectid>/<taskid>', methods=['GET'])
 def show_one_task(email, projectid, taskid): return showSingleTask(email, projectid, taskid)
 
 

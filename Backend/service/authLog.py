@@ -4,13 +4,10 @@ from flask import jsonify
 
 from models.database import user, activeUser
 
-userCount = 1
-
 
 def signUp(response):
     email = response.get('user')['email']
     existing_user = user.find_one({'email': email})
-    global userCount
 
     if existing_user is not None:
         return jsonify({"message": "User with this email already exists"}), 400
@@ -19,7 +16,6 @@ def signUp(response):
         obj = response.get('user')
         user.insert_one(
             createUser(obj['firstName'], obj['lastName'], obj['role'], obj['about'], obj['email'], obj['password']))
-        userCount = userCount + 1
 
     elif response.get('user')["role"] == 'ADMIN' and response.get('secretKey') != 'PortfolioPilot':
         return jsonify({"message": "This secret key is not valid"}), 400
@@ -30,7 +26,6 @@ def signUp(response):
         obj['startDate'] = str(date.today())
         user.insert_one(
             createUser(obj['firstName'], obj['lastName'], obj['role'], obj['about'], obj['email'], obj['password']))
-        userCount = userCount + 1
 
     return jsonify(response.get('user')), 200
 
@@ -62,10 +57,7 @@ def logOut(email):
 
 
 def createUser(firstName, lastName, role, about, email, password):
-    global userCount
-
     return {
-        'id': userCount,
         'firstName': firstName,
         'lastName': lastName,
         'role': role,

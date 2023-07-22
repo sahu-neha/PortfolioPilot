@@ -7,6 +7,8 @@ from models.database import tasks, projects
 
 def createTask(email, projectid, task):
     project = projects.find_one({"projectId": projectid})
+    project["status"] = "In Progess"
+    projects.update_one({"projectId": projectid}, project)
 
     if project is None:
         return jsonify({'message': "Project Not Found"}), 301
@@ -18,7 +20,7 @@ def createTask(email, projectid, task):
         return jsonify({'message': 'Task with this name already there in this Project'}), 301
 
     task['projectId'] = projectid
-    task['status'] = 'to do'
+    task['status'] = 'Pending'
     task['createDate'] = str(date.today())
     tasks.insert_one(task)
 
