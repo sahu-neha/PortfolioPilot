@@ -48,6 +48,8 @@ export default function SimpleCard() {
 			setIsAuthenticated(true);
 			setState(initial);
 			navigate("/", { replace: true });
+		} else {
+			toast.error("Login Failed");
 		}
 	};
 

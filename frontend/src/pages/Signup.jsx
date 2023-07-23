@@ -64,6 +64,8 @@ export default function SignupCard() {
 			secretKey.current = null;
 			toast.success("Signup successful");
 			navigate("/login");
+		} else {
+			toast.error("Signup failed");
 		}
 	};
 
