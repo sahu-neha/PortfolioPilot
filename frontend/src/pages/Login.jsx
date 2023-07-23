@@ -13,14 +13,17 @@ import {
 	InputGroup,
 	InputRightElement,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { userLogin } from "../api";
 import { useNavigate } from "react-router-dom";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { AuthContext } from "../HOC/AuthContext";
 
 export default function SimpleCard() {
 	const [showPassword, setShowPassword] = useState(false);
+
+	const { setIsAuthenticated } = useContext(AuthContext);
 
 	const initial = {
 		email: "",
@@ -37,12 +40,14 @@ export default function SimpleCard() {
 			return;
 		}
 		const response = await userLogin(state);
+		console.log(response);
 
 		if (response.status === 200) {
 			toast.success("Login Successful");
-			localStorage.setItem("user", JSON.stringify((await response).data.user));
+			localStorage.setItem("user", state.email);
+			setIsAuthenticated(true);
 			setState(initial);
-			navigate("/");
+			navigate("/", { replace: true });
 		}
 	};
 

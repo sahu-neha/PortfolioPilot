@@ -10,7 +10,9 @@ from service.tasks import createTask, deleteTask, updateTask, showTasks, showSin
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, origins='*')
+
+app.config['DEBUG'] = True
 
 
 # ================== Auth routes ================== #

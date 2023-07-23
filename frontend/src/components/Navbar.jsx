@@ -1,29 +1,33 @@
 /* eslint-disable react/prop-types */
 import {
-	Box,
-	Flex,
-	Text,
-	IconButton,
-	Button,
-	Stack,
-	Collapse,
-	Icon,
-	Link,
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-	useColorModeValue,
-	useBreakpointValue,
-	useDisclosure,
-} from "@chakra-ui/react";
-import {
-	HamburgerIcon,
-	CloseIcon,
 	ChevronDownIcon,
 	ChevronRightIcon,
+	CloseIcon,
+	HamburgerIcon,
 } from "@chakra-ui/icons";
+import {
+	Box,
+	Button,
+	Collapse,
+	Flex,
+	Icon,
+	IconButton,
+	Link,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+	Stack,
+	Text,
+	useBreakpointValue,
+	useColorModeValue,
+	useDisclosure,
+} from "@chakra-ui/react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import logo from "../../public/logo.png";
+import { AuthContext } from "../HOC/AuthContext";
+import { userLogout } from "../api";
 
 export default function Navbar() {
 	const { isOpen, onToggle } = useDisclosure();
@@ -34,6 +38,20 @@ export default function Navbar() {
 		navigate("/");
 	};
 
+	const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+
+	const handleLogout = async () => {
+		const data = await userLogout(localStorage.getItem("user") || "");
+		
+		if (data.status === 200) {
+			toast.success("Logout Successful");
+			localStorage.removeItem("user");
+			setIsAuthenticated(false);
+			navigate("/");
+		} else {
+			toast.error("Logout Failed");
+		}
+	};
 	return (
 		<Box>
 			<Flex
@@ -67,6 +85,7 @@ export default function Navbar() {
 						aria-label={"Toggle Navigation"}
 					/>
 				</Flex>
+
 				<Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
 					<Flex
 						textAlign={useBreakpointValue({ base: "center", md: "left" })}
@@ -95,33 +114,53 @@ export default function Navbar() {
 					direction={"row"}
 					spacing={6}
 				>
-					<Button
-						onClick={() => navigate("/login")}
-						display={{ base: "none", md: "inline-flex" }}
-						fontSize={"sm"}
-						fontWeight={600}
-						color={"white"}
-						bg={"#5b43d6"}
-						_hover={{
-							bg: "#5a37a6",
-						}}
-					>
-						Sign In
-					</Button>
+					{!isAuthenticated ? (
+						<Button
+							onClick={() => navigate("/login")}
+							display={{ base: "none", md: "inline-flex" }}
+							fontSize={"sm"}
+							fontWeight={600}
+							color={"white"}
+							bg={"#5b43d6"}
+							_hover={{
+								bg: "#5a37a6",
+							}}
+						>
+							Sign In
+						</Button>
+					) : (
+						<Button
+							onClick={handleLogout}
+							display={{ base: "none", md: "inline-flex" }}
+							fontSize={"sm"}
+							fontWeight={600}
+							color={"white"}
+							bg={"#5b43d6"}
+							_hover={{
+								bg: "#5a37a6",
+							}}
+						>
+							Log out
+						</Button>
+					)}
 
-					<Button
-						onClick={() => navigate("/signup")}
-						display={{ base: "none", md: "inline-flex" }}
-						fontSize={"sm"}
-						fontWeight={600}
-						color={"white"}
-						bg={"#ed5ad2"}
-						_hover={{
-							bg: "#ed5aaa",
-						}}
-					>
-						Sign Up
-					</Button>
+					{!isAuthenticated ? (
+						<Button
+							onClick={() => navigate("/signup")}
+							display={{ base: "none", md: "inline-flex" }}
+							fontSize={"sm"}
+							fontWeight={600}
+							color={"white"}
+							bg={"#ed5ad2"}
+							_hover={{
+								bg: "#ed5aaa",
+							}}
+						>
+							Sign Up
+						</Button>
+					) : (
+						<></>
+					)}
 				</Stack>
 			</Flex>
 

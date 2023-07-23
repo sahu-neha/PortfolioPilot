@@ -1,19 +1,25 @@
 // import Head from 'next/head';
 import {
 	Box,
-	Heading,
-	Container,
-	Text,
 	Button,
-	Stack,
-	Icon,
-	useColorModeValue,
-	createIcon,
 	Center,
+	Container,
+	Heading,
+	Icon,
+	Stack,
+	Text,
+	createIcon,
 } from "@chakra-ui/react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../HOC/AuthContext";
 import MidSection from "../components/MidSection";
 
 export default function Home() {
+	const { isAuthenticated } = useContext(AuthContext);
+
+	const navigate = useNavigate();
+
 	return (
 		<>
 			<header>
@@ -49,46 +55,47 @@ export default function Home() {
 						you are a seasoned portfolio manager or just beginning your journey,
 						our full-stack web application is here to empower you at every step.
 					</Text>
-
-					<Stack
-						direction={"column"}
-						spacing={3}
-						align={"center"}
-						alignSelf={"center"}
-						position={"relative"}
-					>
-						<Button
-							colorScheme={"blue"}
-							bg={"#5b43d6"}
-							rounded={"full"}
-							px={9}
-							_hover={{
-								bg: "#5a37a6",
-							}}
+					{!isAuthenticated && (
+						<Stack
+							direction={"column"}
+							spacing={3}
+							align={"center"}
+							alignSelf={"center"}
+							position={"relative"}
 						>
-							Get Started
-						</Button>
-						<Box>
-							<Icon
-								as={Arrow}
-								color={useColorModeValue("gray.800", "gray.300")}
-								w={71}
-								position={"absolute"}
-								right={-71}
-								top={"10px"}
-							/>
-							<Text
-								fontSize={"lg"}
-								fontFamily={"Caveat"}
-								position={"absolute"}
-								right={"-125px"}
-								top={"-15px"}
-								transform={"rotate(10deg)"}
+							<Button
+								onClick={() => navigate("/signup")}
+								colorScheme={"blue"}
+								bg={"#5b43d6"}
+								rounded={"full"}
+								px={9}
+								_hover={{
+									bg: "#5a37a6",
+								}}
 							>
-								Start for free!
-							</Text>
-						</Box>
-					</Stack>
+								Get Started
+							</Button>
+							<Box>
+								<Icon
+									as={Arrow}
+									w={71}
+									position={"absolute"}
+									right={-71}
+									top={"10px"}
+								/>
+								<Text
+									fontSize={"lg"}
+									fontFamily={"Caveat"}
+									position={"absolute"}
+									right={"-125px"}
+									top={"-15px"}
+									transform={"rotate(10deg)"}
+								>
+									Start for free!
+								</Text>
+							</Box>
+						</Stack>
+					)}
 				</Stack>
 			</Container>
 

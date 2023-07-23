@@ -9,12 +9,8 @@ export const userLogin = async (data) => {
 	return await axios.post(`${BASE_URL}/user/login`, data);
 };
 
-export const userLogout = async () => {
-	return await axios.get(`${BASE_URL}/user/logout`);
-};
-
-export const userAuth = async () => {
-	return await axios.get(`${BASE_URL}/user/auth`);
+export const userLogout = async (email) => {
+	return await axios.delete(`${BASE_URL}/user/logout/${email}`);
 };
 
 export const createProject = async (email, data) => {
