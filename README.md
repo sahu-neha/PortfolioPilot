@@ -38,11 +38,11 @@ Portfolio Pilot is built using the following technology stack:
   - Ant Design (for additional UI elements)
 
 - Back-end:
-  - Python Flask (or other server-side frameworks)
-  - MongoDB (or other database systems)
+  - Python Flask (server-side framework)
+  - MongoDB (database system)
 
 - Other Tools and Libraries:
-  - Axios (or other HTTP clients)
+  - Axios (for HTTP clients)
   - Context API (for state management with React)
   - Git (for version control)
   - Vercel (for deployment)
