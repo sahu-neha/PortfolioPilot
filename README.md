@@ -77,6 +77,10 @@ To run Portfolio Pilot locally on your machine, follow these steps:
 
 5. Open your browser and visit `http://localhost:5000` to access the Portfolio Pilot application.
 
+> ## ER Diagram
+
+![image](https://github.com/sahu-neha/PortfolioPilot/assets/109987397/6fa93eb8-e14d-4ca6-a548-2f398c9e5b69)
+
 > ## Login Page
 
 ![login page](https://github.com/sahu-neha/PortfolioPilot/assets/109987397/eb292866-cd68-4c73-8182-e4ff88cbcf0c)
