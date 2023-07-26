@@ -1,134 +1,306 @@
-/* eslint-disable no-unused-vars */
-import { Table } from "antd";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import {
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogCloseButton,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogOverlay,
+	Box,
+	Button,
+	FormControl,
+	FormLabel,
+	Input,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
+	Select,
+	Table,
+	Tbody,
+	Td,
+	Text,
+	Th,
+	Thead,
+	Tr,
+	useDisclosure,
+} from "@chakra-ui/react";
+
+import { getProjects, updateProject } from "../api";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getProjects } from "../api";
-
-const columns = [
-	{
-		title: "Project Name",
-		dataIndex: "name",
-		key: "name",
-	},
-	{
-		title: "Project Description",
-		dataIndex: "description",
-		key: "description",
-	},
-	{
-		title: "Project Status",
-		dataIndex: "Status",
-		key: "Status",
-	},
-	{
-		title: "Start Date",
-		dataIndex: "startDate",
-		key: "startDate",
-	},
-	{
-		title: "End Date",
-		dataIndex: "endDate",
-		key: "endDate",
-	},
-	{
-		title: "Assigned To",
-		dataIndex: "assignedTo",
-		key: "assignedTo",
-	},
-	{
-		title: "Action",
-		dataIndex: "",
-		key: "x",
-		render: () => <a>Delete</a>,
-	},
-	{
-		title: "Action",
-		dataIndex: "",
-		key: "x",
-		render: () => <a>Edit</a>,
-	},
-];
-
-// const data = [
-// 	{
-// 		key: 1,
-// 		name: "John Brown",
-// 		startDate: "2021-09-01",
-// 		endDate: "2021-09-30",
-// 		description:
-// 			"My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.",
-// 	},
-// 	{
-// 		key: 2,
-// 		name: "Jim Green",
-// 		startDate: "2021-09-01",
-// 		endDate: "2021-09-30",
-// 		description:
-// 			"My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.",
-// 	},
-// 	{
-// 		key: 3,
-// 		name: "Not Expandable",
-// 		age: 29,
-// 		address: "Jiangsu No. 1 Lake Park",
-// 		description: "This not expandable",
-// 	},
-// 	{
-// 		key: 4,
-// 		name: "Joe Black",
-// 		age: 32,
-// 		address: "Sydney No. 1 Lake Park",
-// 		description:
-// 			"My name is Joe Black, I am 32 years old, living in Sydney No. 1 Lake Park.",
-// 	},
-// ];
-
-const ViewProjects = () => {
+const AdminTable = () => {
 	const [data, setData] = useState([]);
+	const [selectedProject, setSelectedProject] = useState(null);
 
 	const fetchdata = async () => {
-		return await getProjects(localStorage.getItem("user") || "");
+		const getData = await getProjects(localStorage.getItem("user") || "");
+		setData(getData.data);
 	};
 
 	useEffect(() => {
-		fetchdata().then((res) => {
-			setData(res.data);
-			console.log(data);
-		});
+		fetchdata();
 	}, []);
 
-	localStorage.setItem("projects", JSON.stringify(data));
+	console.log(data);
 
-	// const { createProxyMiddleware } = require('http-proxy-middleware');
+	const {
+		isOpen: isEditOpen,
+		onOpen: onEditOpen,
+		onClose: onEditClose,
+	} = useDisclosure();
 
-	// module.exports = function (app) {
-	// 	app.use(
-	// 		'/api',
-	// 		createProxyMiddleware({
-	// 			target: 'http://your-api-server.com',
-	// 			changeOrigin: true,
-	// 		})
-	// 	);
-	// };
+	const {
+		isOpen: isDeleteOpen,
+		onOpen: onDeleteOpen,
+		onClose: onDeleteClose,
+	} = useDisclosure();
+
+	const cancelRef = React.useRef();
+
+	const handleEdit = (project) => {
+		setSelectedProject(project);
+		onEditOpen();
+	};
+
+	const handleDelete = (project) => {
+		setSelectedProject(project);
+		onDeleteOpen();
+	};
+
+	const handleEditConfirm = () => {
+		const payload = {
+			_id: selectedProject._id,
+			name: selectedProject.projectName,
+			description: selectedProject.projectDescription,
+			status: selectedProject.status,
+			startDate: selectedProject.startDate,
+			endDate: selectedProject.endDate,
+			// assigned: selectedProject.assignedTo,
+		};
+
+		updateProject(localStorage.getItem("user"), payload);
+
+		onEditClose();
+	};
+
+	const handleDeleteConfirm = () => {
+		onDeleteClose();
+	};
 
 	return (
-		<Table
-			columns={columns}
-			expandable={{
-				expandedRowRender: (record) => (
-					<p
-						style={{
-							margin: 0,
-						}}
-					>
-						{record.description}
-					</p>
-				),
-				rowExpandable: (record) => record.name !== "Not Expandable",
-			}}
-			dataSource={data}
-		/>
+		<Box overflowX="auto" margin={"100px 50px"} textAlign={"center"}>
+			<Table variant="simple" colorScheme="teal">
+				<Thead>
+					<Tr>
+						<Th>Project Name</Th>
+						<Th>Project Desc</Th>
+						<Th>Project Start Date</Th>
+						<Th>Project End Date</Th>
+						<Th>Project Status</Th>
+						<Th>Project Assigned To</Th>
+						<Th>Project Actions</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{data.map((item) => (
+						<Tr key={item._id} textAlign={"center"} margin={"auto"}>
+							<Td textAlign={"center"}>{item.projectName}</Td>
+							<Td textAlign={"center"}>{item.projectDescription}</Td>
+							<Td textAlign={"center"}>{item.startDate}</Td>
+							<Td textAlign={"center"}>{item.endDate}</Td>
+							<Td textAlign={"center"}>{item.status}</Td>
+							<Td textAlign={"center"}>
+								{item.assignedTo ? item.assignedTo : "Not Assigned"}
+							</Td>
+							<Td>
+								<Button
+									colorScheme="teal"
+									variant="outline"
+									size="sm"
+									onClick={() => handleEdit(item)}
+									leftIcon={<EditIcon />}
+									marginRight={2}
+								>
+									Edit
+								</Button>
+								<Button
+									colorScheme="red"
+									variant="outline"
+									size="sm"
+									onClick={() => handleDelete(item)}
+									leftIcon={<DeleteIcon />}
+								>
+									Delete
+								</Button>
+							</Td>
+						</Tr>
+					))}
+				</Tbody>
+			</Table>
+
+			{data.length === 0 && (
+				<Text
+					textAlign="center"
+					mt={4}
+					color="black.500"
+					height="70vh"
+					display="flex"
+					alignItems="center"
+					fontFamily="FontAwesome"
+					fontSize="4xl"
+					fontWeight="bold"
+					justifyContent={"center"}
+				>
+					Loading . . .
+				</Text>
+			)}
+
+			{/* Edit Modal */}
+			<Modal isOpen={isEditOpen} onClose={onEditClose}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Edit Project</ModalHeader>
+					<ModalCloseButton />
+
+					<ModalBody>
+						<FormControl>
+							<FormLabel>Name</FormLabel>
+							<Input
+								type="text"
+								name="name"
+								value={selectedProject?.projectName || data.projectName}
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										projectName: e.target.value,
+									}))
+								}
+							/>
+						</FormControl>
+
+						<FormControl>
+							<FormLabel>Description</FormLabel>
+							<Input
+								type="text"
+								name="name"
+								value={
+									selectedProject?.projectDescription || data.projectDescription
+								}
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										projectDescription: e.target.value,
+									}))
+								}
+							/>
+						</FormControl>
+
+						<FormControl>
+							<FormLabel>Status</FormLabel>
+
+							<Select
+								name="status"
+								id=""
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										status: e.target.value,
+									}))
+								}
+							>
+								<option value={data.status}>Select Status</option>
+								<option value="Pending">Pending</option>
+								<option value="In Progress">In progress</option>
+								<option value="Completed">Completed</option>
+							</Select>
+						</FormControl>
+
+						<FormControl>
+							<FormLabel>Start Date</FormLabel>
+							<Input
+								type="date"
+								name="status"
+								value={selectedProject?.startDate || data.startDate}
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										startDate: e.target.value,
+									}))
+								}
+							/>
+						</FormControl>
+
+						<FormControl>
+							<FormLabel>End Date</FormLabel>
+							<Input
+								type="date"
+								name="status"
+								value={selectedProject?.endDate || data.endDate}
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										endDate: e.target.value,
+									}))
+								}
+							/>
+						</FormControl>
+
+						{/* <FormControl>
+							<FormLabel>Assigned To</FormLabel>
+							<Input
+								type="text"
+								name="assigned"
+								value={selectedProject?.assignedTo || data.assignedTo}
+								onChange={(e) =>
+									setSelectedProject((prevProj) => ({
+										...prevProj,
+										assignedTo: e.target.value,
+									}))
+								}
+							/>
+						</FormControl> */}
+					</ModalBody>
+
+					<ModalFooter>
+						<Button colorScheme="teal" onClick={handleEditConfirm}>
+							Save
+						</Button>
+						<Button variant="ghost" onClick={onEditClose}>
+							Cancel
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog
+				isOpen={isDeleteOpen}
+				leastDestructiveRef={cancelRef}
+				onClose={onDeleteClose}
+			>
+				<AlertDialogOverlay />
+				<AlertDialogContent>
+					<AlertDialogHeader>Delete Project</AlertDialogHeader>
+					<AlertDialogCloseButton />
+					<AlertDialogBody>
+						Are you sure you want to delete this project?
+					</AlertDialogBody>
+					<AlertDialogFooter>
+						<Button ref={cancelRef} onClick={onDeleteClose}>
+							Cancel
+						</Button>
+						<Button colorScheme="red" onClick={handleDeleteConfirm} ml={3}>
+							Delete
+						</Button>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</Box>
 	);
 };
 
-export default ViewProjects;
+export default AdminTable;

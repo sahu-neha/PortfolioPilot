@@ -81,13 +81,13 @@ def deleteUser(email):
 
 
 def updateUser(email, request):
-    activeUserDetails = activeUser.find_one({'email': email})
-
-    if activeUserDetails is None:
-        return jsonify({'message': "You have to Log In First"}), 403
-    else:
-        user.update_one({'email': email}, {'$set': request})
-        return jsonify(jsonify({'isUpdate': True})), 200
+    # activeUserDetails = activeUser.find_one({'email': email})
+    #
+    # if activeUserDetails is None:
+    #     return jsonify({'message': "You have to Log In First"}), 403
+    # else:
+    user.update_one({'email': email}, {'$set': request})
+    return jsonify(jsonify({'isUpdate': True})), 200
 
 
 def readManager(email):
@@ -100,3 +100,11 @@ def readManager(email):
         manager['_id'] = str(manager['_id'])
 
     return jsonify(managers), 201
+
+
+def isAdmin(email):
+    active_User = activeUser.find_one({'email': email, "role": "ADMIN"})
+    if activeUser is None:
+        return jsonify({'message': "I m Admin"}), 200
+    else:
+        return jsonify({'message': "I m not Admin"}), 201

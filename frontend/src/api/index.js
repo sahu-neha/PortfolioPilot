@@ -18,5 +18,17 @@ export const createProject = async (email, data) => {
 };
 
 export const getProjects = async (email) => {
-	return await axios.get(`${BASE_URL}/project/${email}`);
+	try {
+		return await axios.get(`${BASE_URL}/project/${email}`);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const updateProject = async (email, data) => {
+	try {
+		return await axios.patch(`${BASE_URL}/project/${email}`, data);
+	} catch (error) {
+		console.log(error);
+	}
 };

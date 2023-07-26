@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 
-from service.authLog import signUp, logIn, logOut, deleteUser, updateUser, readManager
+from service.authLog import signUp, logIn, logOut, deleteUser, isAdmin, updateUser, readManager
 from service.projects import createProject, assignProjectToManager, updateProject, deleteProject, displayProjects, \
     displaySingleProject
 from service.resource import addResource, deleteResource, updateResource, showResources, assignResourceToTask, \
@@ -11,8 +11,6 @@ from service.tasks import createTask, deleteTask, updateTask, showTasks, showSin
 app = Flask(__name__)
 
 CORS(app, origins='*')
-
-app.config['DEBUG'] = True
 
 
 # ================== Auth routes ================== #
@@ -29,18 +27,23 @@ def login(): return logIn(request.get_json())
 def logout(email): return logOut(email)
 
 
-@app.route('/user/delete/<email>', methods=["DELETE"])
+@app.route('/user/delete/<email>', methods=["GET"])
 def deleteUserRoute(email): return deleteUser(email)
+
+
+@app.route('/user/isadmin/<email>')
+def is_admin(email): return isAdmin(email)
 
 
 @app.route('/user/update/<email>', methods=["PATCH"])
 def updateUserRoute(email): return updateUser(email, request.get_json())
 
 
-# ================== Project routes ================== #
-
 @app.route('/user/managers/<email>', methods=["GET"])
 def showManagers(email): return readManager(email)
+
+
+# ================== Project routes ================== #
 
 
 @app.route('/project/<email>', methods=['POST'])
@@ -85,7 +88,7 @@ def update_resource(email, resid): return updateResource(email, resid, request.g
 def getAllResources(email): return showResources(email)
 
 
-@app.route('/res/<email>/<resid>')
+@app.route('/res/<email>/<resid>', methods=['GET'])
 def getSingleResource(email, resid): return showSingleResource(email, resid)
 
 
@@ -103,7 +106,7 @@ def create_task(email, projectid, task): return createTask(email, projectid, tas
 def delete_task(email, projectid, task): return deleteTask(email, projectid, task)
 
 
-@app.route('/task/<email>/<projectid>/<task>', methods=['PATCH'])
+@app.route('/task/<email>/<projectid>', methods=['PUT'])
 def update_task(email, projectid, task): return updateTask(email, projectid, task)
 
 

@@ -44,15 +44,22 @@ def assignProjectToManager(adminEmail, request):
 
 
 def updateProject(adminEmail, request):
-    project = request.get('project')
+    print(request)
+    project = request
 
-    activeUserDetails = activeUser.find_one({'email': adminEmail, 'role': 'ADMIN'})
+    activeUserDetails = activeUser.find_one({"email": adminEmail, "role": "ADMIN"})
     if activeUserDetails is None:
-        return jsonify({'message': 'you are not Authorize to assign Project'}), 403
+        return jsonify({"message": "you are not Authorize to edit Project"}), 403
 
-    projects.update_one({"projectId": project['projectId']}, {'$set': project})
+    oldName = project.pop("old_projectId")
+    if oldName != project["projectId"]:
+        existing_project = projects.find_one({"projectId": project["projectId"]})
+        if existing_project is not None:
+            return jsonify({"message": "Project with same Id already Present"}), 301
 
-    return jsonify({'message': "Project is Updated SuccessFully"}), 200
+    projects.update_one({"projectId": oldName}, {"$set": project})
+
+    return jsonify({"message": "Project is Updated SuccessFully"}), 200
 
 
 def deleteProject(email, projectid):
@@ -72,12 +79,14 @@ def deleteProject(email, projectid):
 def displayProjects(email):
     activeUserDetails = activeUser.find_one({'email': email})
     if activeUserDetails["role"] == 'ADMIN':
-        return jsonify(list(projects.find())), 200
+        arr = list(projects.find())
+        for pr in arr:
+            pr["_id"] = str(pr["_id"])
+        return arr, 200
     else:
         arr = list(projects.find({'manager': email}))
         for pr in arr:
             pr['_id'] = str(pr['_id'])
-
         return jsonify(arr), 200
 
 

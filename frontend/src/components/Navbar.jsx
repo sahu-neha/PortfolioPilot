@@ -42,7 +42,7 @@ export default function Navbar() {
 
 	const handleLogout = async () => {
 		const data = await userLogout(localStorage.getItem("user") || "");
-		
+
 		if (data.status === 200) {
 			toast.success("Logout Successful");
 			localStorage.removeItem("user");
@@ -117,7 +117,7 @@ export default function Navbar() {
 					{!isAuthenticated ? (
 						<Button
 							onClick={() => navigate("/login")}
-							display={{ base: "none", md: "inline-flex" }}
+							display={{ base: "inline-flex", md: "inline-flex" }}
 							fontSize={"sm"}
 							fontWeight={600}
 							color={"white"}
@@ -131,7 +131,7 @@ export default function Navbar() {
 					) : (
 						<Button
 							onClick={handleLogout}
-							display={{ base: "none", md: "inline-flex" }}
+							display={{ base: "inline-flex", md: "inline-flex" }}
 							fontSize={"sm"}
 							fontWeight={600}
 							color={"white"}
@@ -147,7 +147,7 @@ export default function Navbar() {
 					{!isAuthenticated ? (
 						<Button
 							onClick={() => navigate("/signup")}
-							display={{ base: "none", md: "inline-flex" }}
+							display={{ base: "inline-flex", md: "inline-flex" }}
 							fontSize={"sm"}
 							fontWeight={600}
 							color={"white"}
