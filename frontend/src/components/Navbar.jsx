@@ -334,7 +334,7 @@ const NAV_ITEMS = [
 			},
 			{
 				label: "View Projects",
-				href: "#",
+				href: "/viewprojects",
 			},
 		],
 	},
